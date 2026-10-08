@@ -1,0 +1,24 @@
+services:
+  selfbank:
+    build: .
+    image: selfbank:latest
+    container_name: selfbank
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      # Overrides .env: inside the container the database belongs on the volume.
+      DATABASE_PATH: /data/selfbank.db
+    volumes:
+      - selfbank-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  selfbank-data:
